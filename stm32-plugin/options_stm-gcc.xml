@@ -65,21 +65,57 @@
             checkAgainst="-g -ggdb"
             checkMessage="You have debugging symbols enabled. This is Not A Good Thing(tm) when optimizing..."/>
 
+    <Category name="ARM CPU architecture specific">
+        <Option name="Generate code that executes in Thumb state"
+                option="-mthumb"
+                supersedes="-marm -mthumb-interwork"/>
+        <Option name="Generate code that executes in ARM state"
+                option="-marm"
+                supersedes="-mthumb -mthumb-interwork"/>
+    </Category>
+
     <!-- http://distribute.atmel.no/tools/opensource/Atmel-ARM-GNU-Toolchain/4.8.4/readme.txt -->
     <Category name="STM CPU architecture derivatives"
               exclusive="true">
+        <Option name="ARM v6-m cpu(M0/1)"
+                option="-march=armv6-m"
+                supersedes="-march=armv7-m -march=armv7e-m"/>
+        <Option name="ARM v7-m cpu(M3)"
+                option="-march=armv7-m"
+                supersedes="-march=armv6-m -march=armv7e-m"/>
+        <Option name="ARM v7e-m cpu(M4)"
+                option="-march=armv7e-m"
+                supersedes="-march=armv6-m -march=armv7-m"/>
+    </Category>
+    <Category name="STM CPU type derivatives"
+              exclusive="true">
         <Option name="Cortex-M0"
-                option="-mthumb -march=armv6-m -mcpu=cortex-m0"/>
+                option="-mcpu=cortex-m0"
+                supersedes="-mcpu=cortex-m1 -mcpu=cortex-m3 -mcpu=cortex-m4"/>
         <Option name="Cortex-M1"
-                option="-mthumb -march=armv6-m -mcpu=cortex-m1"/>
+                option="-mcpu=cortex-m1"
+                supersedes="-mcpu=cortex-m0 -mcpu=cortex-m3 -mcpu=cortex-m4"/>
         <Option name="Cortex-M3"
-                option="-mthumb -march=armv7-m -mcpu=cortex-m3"/>
-        <Option name="Cortex-M4(No FP)"
-                option="-mthumb -march=armv7e-m -mcpu=cortex-m4"/>
-        <Option name="Cortex-M4(Soft FP)"
-                option="-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfloat-abi=softfp -mfpu=fpv4-sp-d16"/>
-        <Option name="Cortex-M4(Hard FP)"
-                option="-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16"/>
+                option="-mcpu=cortex-m3"
+                supersedes="-mcpu=cortex-m0 -mcpu=cortex-m1 -mcpu=cortex-m4"/>
+        <Option name="Cortex-M4"
+                option="-mcpu=cortex-m4"
+                supersedes="-mcpu=cortex-m0 -mcpu=cortex-m1 -mcpu=cortex-m3"/>
+    </Category>
+    <Category name="STM float-abi derivatives"
+              exclusive="true">
+        <Option name="Soft FP"
+                option="-mfloat-abi=softfp"
+                supersedes="-mcpu=cortex-m0 -mcpu=cortex-m1 -mcpu=cortex-m3 -mfloat-abi=hard"/>
+        <Option name="Hard FP"
+                option="-mfloat-abi=hard"
+                supersedes="-mcpu=cortex-m0 -mcpu=cortex-m1 -mcpu=cortex-m3 -mfloat-abi=softfp"/>
+    </Category>
+    <Category name="STM FPU type derivatives"
+              exclusive="true">
+        <Option name="FPU  fpv4-sp-d16"
+                option="-mfpu=fpv4-sp-d16"
+                supersedes="-mcpu=cortex-m0 -mcpu=cortex-m1 -mcpu=cortex-m3"/>
     </Category>
 
     <Command name="CompileObject"
@@ -105,7 +141,7 @@
     <Command name="LinkStatic"
              value="$lib_linker -r -s $static_output $link_objects"/>
     <Command name="LinkNative"
-             value="$linker $libdirs -o $exe_output $link_objects $link_resobjects $link_options $libs"/>
+             value="$linker -o $exe_output $link_objects $link_resobjects $link_options $libdirs $libs"/>
     <Common name="cmds"/>
 
     <Common name="re"/>

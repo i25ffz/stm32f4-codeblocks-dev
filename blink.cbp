@@ -22,7 +22,11 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16" />
+			<Add option="-mfpu=fpv4-sp-d16" />
+			<Add option="-mfloat-abi=hard" />
+			<Add option="-mcpu=cortex-m4" />
+			<Add option="-march=armv7e-m" />
+			<Add option="-mthumb" />
 			<Add option="-Wall" />
 			<Add option="-DUSE_HAL_DRIVER" />
 			<Add option="-DSTM32F429xx" />
