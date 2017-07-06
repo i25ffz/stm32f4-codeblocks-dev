@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    system_stm32f4xx.c
   * @author  MCD Application Team
-  * @version V1.2.5
+  * @version V1.2.8
   * @date    17-February-2017
   * @brief   CMSIS Cortex-M4 Device Peripheral Access Layer System Source File.
   *
@@ -24,7 +24,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2017 STMicroelectronics </center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -90,6 +90,9 @@
   */
 
 /************************* Miscellaneous Configuration ************************/
+/*!< Uncomment the following line if you need to use external SDRAM mounted
+     on DK as data memory  */
+/* #define DATA_IN_ExtSDRAM */
 
 /*!< Uncomment the following line if you need to relocate your vector Table in
      Internal SRAM. */
@@ -127,6 +130,13 @@ const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 /**
   * @}
   */
+  
+/** @addtogroup STM32F4xx_System_Private_FunctionPrototypes
+  * @{
+  */
+#if defined (DATA_IN_ExtSDRAM)
+  static void SystemInit_ExtMemCtl(void); 
+#endif /* DATA_IN_ExtSDRAM */
 
 /** @addtogroup STM32F4xx_System_Private_FunctionPrototypes
   * @{
@@ -171,6 +181,10 @@ void SystemInit(void)
 
   /* Disable all interrupts */
   RCC->CIR = 0x00000000;
+  
+#if defined (DATA_IN_ExtSDRAM)
+  SystemInit_ExtMemCtl(); 
+#endif /* DATA_IN_ExtSDRAM */
 
   /* Configure the Vector Table location add offset address ------------------*/
 #ifdef VECT_TAB_SRAM
@@ -263,6 +277,152 @@ void SystemCoreClockUpdate(void)
   /* HCLK frequency */
   SystemCoreClock >>= tmp;
 }
+
+#if defined (DATA_IN_ExtSDRAM)
+/**
+  * @brief  Setup the external memory controller.
+  *         Called in startup_stm32f4xx.s before jump to main.
+  *         This function configures the external memories (SDRAM)
+  *         This SDRAM will be used as program data memory (including heap and stack).
+  * @param  None
+  * @retval None
+  */
+void SystemInit_ExtMemCtl(void)
+{
+  register uint32_t tmpreg = 0, timeout = 0xFFFF;
+  register __IO uint32_t index;
+
+  /* Enable GPIOB, GPIOC, GPIOD, GPIOE, GPIOF and GPIOG interface 
+  clock */
+  RCC->AHB1ENR |= 0x0000007E;
+
+  /* Connect PBx pins to FMC Alternate function */
+  GPIOB->AFR[0]  = 0x0CC00000;
+  GPIOB->AFR[1]  = 0x00000000;
+  /* Configure PBx pins in Alternate function mode */ 
+  GPIOB->MODER   = 0x00002A80;
+  /* Configure PBx pins speed to 100 MHz */
+  GPIOB->OSPEEDR = 0x00003CC0;
+  /* Configure PBx pins Output type to push-pull */
+  GPIOB->OTYPER  = 0x00000000;
+  /* No pull-up, pull-down for PBx pins */ 
+  GPIOB->PUPDR   = 0x00000100;
+
+  /* Connect PCx pins to FMC Alternate function */
+  GPIOC->AFR[0]  = 0x0000000C;
+  GPIOC->AFR[1]  = 0x00000000;
+  /* Configure PCx pins in Alternate function mode */ 
+  GPIOC->MODER   = 0x00000002;
+  /* Configure PCx pins speed to 100 MHz */
+  GPIOC->OSPEEDR = 0x00000003;
+  /* Configure PCx pins Output type to push-pull */
+  GPIOC->OTYPER  = 0x00000000;
+  /* No pull-up, pull-down for PCx pins */ 
+  GPIOC->PUPDR   = 0x00000000;
+
+  /* Connect PDx pins to FMC Alternate function */
+  GPIOD->AFR[0]  = 0x000000CC;
+  GPIOD->AFR[1]  = 0xCC000CCC;
+  /* Configure PDx pins in Alternate function mode */ 
+  GPIOD->MODER   = 0xA02A000A;
+  /* Configure PDx pins speed to 100 MHz */
+  GPIOD->OSPEEDR = 0xF03F000F;
+  /* Configure PDx pins Output type to push-pull */
+  GPIOD->OTYPER  = 0x00000000;
+  /* No pull-up, pull-down for PDx pins */ 
+  GPIOD->PUPDR   = 0x00000000;
+
+  /* Connect PEx pins to FMC Alternate function */
+  GPIOE->AFR[0]  = 0xC00000CC;
+  GPIOE->AFR[1]  = 0xCCCCCCCC;
+  /* Configure PEx pins in Alternate function mode */ 
+  GPIOE->MODER   = 0xAAAA800A;
+  /* Configure PEx pins speed to 100 MHz */
+  GPIOE->OSPEEDR = 0xFFFFC00F;
+  /* Configure PEx pins Output type to push-pull */
+  GPIOE->OTYPER  = 0x00000000;
+  /* No pull-up, pull-down for PEx pins */ 
+  GPIOE->PUPDR   = 0x00000000;
+  
+  /* Connect PFx pins to FMC Alternate function */
+  GPIOF->AFR[0]  = 0x00CCCCCC;
+  GPIOF->AFR[1]  = 0xCCCCC000;
+  /* Configure PFx pins in Alternate function mode */ 
+  GPIOF->MODER   = 0xAA800AAA;
+  /* Configure PFx pins speed to 100 MHz */
+  GPIOF->OSPEEDR = 0xFFC00FFF;
+  /* Configure PFx pins Output type to push-pull */
+  GPIOF->OTYPER  = 0x00000000;
+  /* No pull-up, pull-down for PFx pins */ 
+  GPIOF->PUPDR   = 0x00000000;
+  
+  /* Connect PGx pins to FMC Alternate function */
+  GPIOG->AFR[0]  = 0x00CC00CC;
+  GPIOG->AFR[1]  = 0xC000000C;
+  /* Configure PGx pins in Alternate function mode */ 
+  GPIOG->MODER   = 0x80020A0A;
+  /* Configure PGx pins speed to 100 MHz */
+  GPIOG->OSPEEDR = 0xC0030F0F;
+  /* Configure PGx pins Output type to push-pull */
+  GPIOG->OTYPER  = 0x00000000;
+  /* No pull-up, pull-down for PGx pins */ 
+  GPIOG->PUPDR   = 0x00000000;
+
+  /* FMC Configuration */
+  /* Enable the FMC interface clock */
+  RCC->AHB3ENR |= 0x00000001;
+  
+  /* Configure and enable SDRAM bank2 */
+  FMC_Bank5_6->SDCR[0] = 0x00002ED0;
+  FMC_Bank5_6->SDCR[1] = 0x000001D4;
+  FMC_Bank5_6->SDTR[0] = 0x0F1F6FFF;
+  FMC_Bank5_6->SDTR[1] = 0x01010361;
+  
+  /* SDRAM initialization sequence */
+  /* Clock enable command */
+  FMC_Bank5_6->SDCMR = 0x00000009; 
+  tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
+  while((tmpreg != 0) && (timeout-- > 0))
+  {
+    tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
+  }
+
+  /* Delay */
+  for (index = 0; index<1000; index++);
+  
+  /* PALL command */
+  FMC_Bank5_6->SDCMR = 0x0000000A;     
+  timeout = 0xFFFF;
+  while((tmpreg != 0) && (timeout-- > 0))
+  {
+    tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
+  }
+  
+  /* Auto refresh command */
+  FMC_Bank5_6->SDCMR = 0x0000006B;
+  timeout = 0xFFFF;
+  while((tmpreg != 0) && (timeout-- > 0))
+  {
+    tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
+  }
+ 
+  /* MRD register program */
+  FMC_Bank5_6->SDCMR = 0x0004620C;
+  timeout = 0xFFFF;
+  while((tmpreg != 0) && (timeout-- > 0))
+  {
+    tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
+  } 
+  
+  /* Set refresh count */
+  tmpreg = FMC_Bank5_6->SDRTR;
+  FMC_Bank5_6->SDRTR = (tmpreg | (0x0000056A<<1));
+  
+  /* Disable write protection */
+  tmpreg = FMC_Bank5_6->SDCR[1]; 
+  FMC_Bank5_6->SDCR[1] = (tmpreg & 0xFFFFFDFF);
+}
+#endif /* DATA_IN_ExtSDRAM */
 
 /**
   * @}

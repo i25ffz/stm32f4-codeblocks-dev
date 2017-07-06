@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="stm32f4-ltdc" />
+		<Option pch_mode="2" />
+		<Option compiler="stm-gcc" />
+		<Build>
+			<Target title="debug">
+				<Option output="ltdc_d" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/debug/" />
+				<Option type="5" />
+				<Option compiler="stm-gcc" />
+			</Target>
+			<Target title="release">
+				<Option output="ltdc" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/release/" />
+				<Option type="5" />
+				<Option compiler="stm-gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-mfpu=fpv4-sp-d16" />
+			<Add option="-mfloat-abi=hard" />
+			<Add option="-mcpu=cortex-m4" />
+			<Add option="-march=armv7e-m" />
+			<Add option="-mthumb" />
+			<Add option="-Wall" />
+			<Add option="-DUSE_HAL_DRIVER" />
+			<Add option="-DSTM32F429xx" />
+			<Add directory="inc" />
+			<Add directory="CMSIS/device" />
+			<Add directory="CMSIS/core" />
+			<Add directory="HAL_Driver/Inc" />
+			<Add directory="Utilities/STM32F429I-Discovery" />
+		</Compiler>
+		<Linker>
+			<Add option="-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -TLinkerScript.ld" />
+		</Linker>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_cortex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_dma.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_dma2d.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_gpio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_i2c.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_ltdc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_pwr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_rcc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_sdram.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_spi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HAL_Driver/Src/stm32f4xx_ll_fmc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LinkerScript.ld" />
+		<Unit filename="Utilities/Components/ili9341/ili9341.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Utilities/Components/ili9341/ili9341.h" />
+		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery.h" />
+		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.h" />
+		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.h" />
+		<Unit filename="inc/main.h" />
+		<Unit filename="inc/st_logo1.h" />
+		<Unit filename="inc/st_logo2.h" />
+		<Unit filename="inc/stm32f4xx_hal_conf.h" />
+		<Unit filename="inc/stm32f4xx_it.h" />
+		<Unit filename="src/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stm32f4xx_hal_msp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stm32f4xx_it.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/syscalls.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/system_stm32f4xx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="startup/startup_stm32f429xx.s" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
