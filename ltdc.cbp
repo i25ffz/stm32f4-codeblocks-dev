@@ -12,6 +12,15 @@
 				<Option object_output="obj/debug/" />
 				<Option type="5" />
 				<Option compiler="stm-gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-gdwarf-2" />
+				</Compiler>
+				<ExtraCommands>
+					<Add after="arm-none-eabi-objcopy -O binary $exe_output $exe_output.bin" />
+					<Add after='openocd -f board/stm32f429disc1.cfg -c &quot;program $exe_output.bin reset exit 0x08000000&quot;' />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 			<Target title="release">
 				<Option output="ltdc" prefix_auto="1" extension_auto="1" />
@@ -19,6 +28,15 @@
 				<Option object_output="obj/release/" />
 				<Option type="5" />
 				<Option compiler="stm-gcc" />
+				<Linker>
+					<Add option="-O2" />
+					<Add option="-s" />
+				</Linker>
+				<ExtraCommands>
+					<Add after="arm-none-eabi-objcopy -O binary $exe_output $exe_output.bin" />
+					<Add after='openocd -f board/stm32f429disc1.cfg -c &quot;program $exe_output.bin reset exit 0x08000000&quot;' />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 		</Build>
 		<Compiler>
@@ -28,8 +46,10 @@
 			<Add option="-march=armv7e-m" />
 			<Add option="-mthumb" />
 			<Add option="-Wall" />
+			<Add option="-fdata-sections -ffunction-sections" />
 			<Add option="-DUSE_HAL_DRIVER" />
 			<Add option="-DSTM32F429xx" />
+			<Add option="-DUSE_STM32F429I_DISCO" />
 			<Add directory="inc" />
 			<Add directory="CMSIS/device" />
 			<Add directory="CMSIS/core" />
@@ -37,7 +57,7 @@
 			<Add directory="Utilities/STM32F429I-Discovery" />
 		</Compiler>
 		<Linker>
-			<Add option="-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -TLinkerScript.ld" />
+			<Add option="-mthumb -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -TLinkerScript.ld" />
 		</Linker>
 		<Unit filename="HAL_Driver/Src/stm32f4xx_hal.c">
 			<Option compilerVar="CC" />
@@ -121,7 +141,11 @@
 		<Unit filename="startup/startup_stm32f429xx.s" />
 		<Extensions>
 			<code_completion />
-			<debugger />
+			<debugger>
+				<remote_debugging target="debug">
+					<options conn_type="0" serial_baud="115200" ip_address="localhost" ip_port="3333" additional_cmds_before="monitor reset halt&#x0A;load $exe_output&#x0A;file $exe_output&#x0A;monitor sleep 1000&#x0A;monitor reset halt" />
+				</remote_debugging>
+			</debugger>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
