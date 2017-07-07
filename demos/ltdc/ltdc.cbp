@@ -51,73 +51,73 @@
 			<Add option="-DSTM32F429xx" />
 			<Add option="-DUSE_STM32F429I_DISCO" />
 			<Add directory="inc" />
-			<Add directory="CMSIS/device" />
-			<Add directory="CMSIS/core" />
-			<Add directory="HAL_Driver/Inc" />
-			<Add directory="Utilities/STM32F429I-Discovery" />
+			<Add directory="../../CMSIS/device" />
+			<Add directory="../../CMSIS/core" />
+			<Add directory="../../HAL_Driver/Inc" />
+			<Add directory="../../Utilities/STM32F429I-Discovery" />
 		</Compiler>
 		<Linker>
-			<Add option="-mthumb -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -TLinkerScript.ld" />
+			<Add option="-mthumb -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T../../LinkerScript.ld" />
 		</Linker>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_cortex.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_cortex.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_dma.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_dma.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_dma2d.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_dma2d.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_gpio.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_gpio.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_i2c.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_i2c.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_ltdc.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_ltdc.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_pwr.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_pwr.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_rcc.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_rcc.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_sdram.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_sdram.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_hal_spi.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_spi.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HAL_Driver/Src/stm32f4xx_ll_fmc.c">
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_ll_fmc.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LinkerScript.ld" />
-		<Unit filename="Utilities/Components/ili9341/ili9341.c">
+		<Unit filename="../../LinkerScript.ld" />
+		<Unit filename="../../Utilities/Components/ili9341/ili9341.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Utilities/Components/ili9341/ili9341.h" />
-		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery.c">
+		<Unit filename="../../Utilities/Components/ili9341/ili9341.h" />
+		<Unit filename="../../Utilities/STM32F429I-Discovery/stm32f429i_discovery.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery.h" />
-		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.c">
+		<Unit filename="../../Utilities/STM32F429I-Discovery/stm32f429i_discovery.h" />
+		<Unit filename="../../Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.h" />
-		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.c">
+		<Unit filename="../../Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.h" />
+		<Unit filename="../../Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.h" />
+		<Unit filename="../../Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.h" />
 		<Unit filename="inc/main.h" />
 		<Unit filename="inc/st_logo1.h" />
 		<Unit filename="inc/st_logo2.h" />
@@ -138,7 +138,7 @@
 		<Unit filename="src/system_stm32f4xx.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="startup/startup_stm32f429xx.s" />
+		<Unit filename="../../startup/startup_stm32f429xx.s" />
 		<Extensions>
 			<code_completion />
 			<debugger>
