@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="ltdc" />
+		<Option title="uart" />
 		<Option pch_mode="2" />
 		<Option compiler="stm-gcc" />
 		<Build>
 			<Target title="debug">
-				<Option output="ltdc_d" prefix_auto="1" extension_auto="1" />
+				<Option output="uart_d" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/debug/" />
 				<Option type="5" />
@@ -23,7 +23,7 @@
 				</ExtraCommands>
 			</Target>
 			<Target title="release">
-				<Option output="ltdc" prefix_auto="1" extension_auto="1" />
+				<Option output="uart" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/release/" />
 				<Option type="5" />
@@ -96,6 +96,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_spi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal_uart.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../HAL_Driver/Src/stm32f4xx_ll_fmc.c">
