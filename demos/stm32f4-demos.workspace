@@ -3,5 +3,6 @@
 	<Workspace title="stm32f4-demos">
 		<Project filename="ltdc/ltdc.cbp" />
 		<Project filename="uart/uart.cbp" />
+		<Project filename="mems/mems.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
