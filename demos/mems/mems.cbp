@@ -48,6 +48,7 @@
 			<Add option="-Wall" />
 			<Add option="-fdata-sections -ffunction-sections" />
 			<Add option="-DUSE_HAL_DRIVER" />
+			<Add option="-DUSE_FULL_LL_DRIVER" />
 			<Add option="-DSTM32F429xx" />
 			<Add option="-DUSE_STM32F429I_DISCO" />
 			<Add directory="inc" />
@@ -99,6 +100,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../HAL_Driver/Src/stm32f4xx_ll_fmc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../HAL_Driver/Src/stm32f4xx_ll_rcc.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../LinkerScript.ld" />

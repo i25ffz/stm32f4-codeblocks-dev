@@ -51,14 +51,68 @@ float Gyro[3];
 float X_BiasError, Y_BiasError, Z_BiasError = 0.0;
 uint8_t Xval, Yval = 0x00;
 static __IO uint32_t TimingDelay;
+LTDC_HandleTypeDef LtdcHandle;
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
-static void Demo_MEMS(void);
-static void Demo_GyroConfig(void);
-static void Demo_GyroReadAngRate (float* pfData);
-static void Gyro_SimpleCalibration(float* GyroData);
+static void LCD_Config(void);
+static void SystemClock_Config(void);
+static void Error_Handler(void);
+#if 1
+/**
+  * @brief  Main program
+  * @param  None
+  * @retval None
+  */
+int main(void)
+{
+//   uint8_t R;
+   uint8_t buf[10];
+   uint8_t buf_1[10];
+   uint8_t buf_2[10];
+   float pdd[3];
+  /* STM32F4xx HAL library initialization:
+       - Configure the Flash prefetch, instruction and Data caches
+       - Configure the Systick to generate an interrupt each 1 msec
+       - Set NVIC Group Priority to 4
+       - Low Level Initialization
+     */
+  HAL_Init();
+  SystemClock_Config();
+  BSP_LCD_Init();
+  BSP_LCD_LayerDefaultInit(LCD_FOREGROUND_LAYER, (LCD_FRAME_BUFFER + BUFFER_OFFSET));
+  /* Configure the transparency for foreground : Increase the transprency */
+  BSP_LCD_SetTransparency(LCD_BACKGROUND_LAYER, 0);
+  BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
+  BSP_GYRO_Init();
+	//R=BSP_GYRO_ReadID();
 
-LL_RCC_ClocksTypeDef RCC_Clocks;
+	/* Configure the System clock to have a frequency of 180 MHz */
+  SystemClock_Config();
+	Delay(20);
+	BSP_GYRO_Init();
+	Delay(4);
+	BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+  BSP_LCD_Clear(LCD_COLOR_BLACK );
+	BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
+ 	Delay(4);
+
+  /* Infinite loop */
+  while (1)
+  {
+		BSP_GYRO_GetXYZ(pdd);
+  sprintf(buf,"%.3f",pdd[0]);
+	sprintf(buf_1,"%.3f",pdd[1]);
+	sprintf(buf_2,"%.3f",pdd[2]);
+	BSP_LCD_DisplayStringAtLine(0,buf);
+	BSP_LCD_DisplayStringAtLine(1,buf_1);
+	BSP_LCD_DisplayStringAtLine(2,buf_2);
+	Delay(200);
+  }
+}
+#endif
+
+#if 0
 /**
   * @brief   Main program
   * @param  None
@@ -66,32 +120,26 @@ LL_RCC_ClocksTypeDef RCC_Clocks;
   */
 int main(void)
 {
-  /*!< At this stage the microcontroller clock setting is already configured,
-  this is done through SystemInit() function which is called from startup
-  files (startup_stm32f429_439xx.s) before to branch to application main.
-  To reconfigure the default setting of SystemInit() function, refer to
-  system_stm32f4xx.c file
-  */
-  /* SysTick end of count event each 10ms */
-  LL_RCC_GetSystemClocksFreq(&RCC_Clocks);
-  SysTick_Config(RCC_Clocks.HCLK_Frequency / 100);
+  /* STM32F4xx HAL library initialization:
+       - Configure the Flash prefetch, instruction and Data caches
+       - Configure the Systick to generate an interrupt each 1 msec
+       - Set NVIC Group Priority to 4
+       - Global MSP (MCU Support Package) initialization
+     */
+  HAL_Init();
 
-  /* Initialize the LCD */
-  LCD_Init();
-  /* Initialize the LCD Layers*/
-  LCD_LayerInit();
+  /* Configure the system clock to 180 MHz */
+  SystemClock_Config();
 
-  /* Enable the LTDC */
-  LTDC_Cmd(ENABLE);
+  /* Configure LED3 */
+  BSP_LED_Init(LED3);
 
-  /* Set LCD Background Layer  */
-  LCD_SetLayer(LCD_FOREGROUND_LAYER);
-
-  /* Clear the Background Layer */
-  LCD_Clear(LCD_COLOR_WHITE);
+  /*##-1- LCD Configuration ##################################################*/
+  /* Configure 2 layers w/ Blending */
+  LCD_Config();
 
   /* Gyroscope configuration */
-  Demo_GyroConfig();
+  BSP_GYRO_Init();
 
   /* Gyroscope calibration */
   Gyro_SimpleCalibration(Gyro);
@@ -102,7 +150,162 @@ int main(void)
     Demo_MEMS();
   }
 }
+#endif
 
+/**
+  * @brief LCD Configuration.
+  * @note  This function Configure the LTDC peripheral :
+  *        1) Configure the Pixel Clock for the LCD
+  *        2) Configure the LTDC Timing and Polarity
+  *        3) Configure the LTDC Layer 1 :
+  *           - direct color (RGB565) as pixel format
+  *           - The frame buffer is located at FLASH memory
+  *           - The Layer size configuration : 240x160
+  *        4) Configure the LTDC Layer 2 :
+  *           - direct color (RGB565) as pixel format
+  *           - The frame buffer is located at FLASH memory
+  *           - The Layer size configuration : 240x160
+  * @retval
+  *  None
+  */
+static void LCD_Config(void)
+{
+  /* Initialization of ILI9341 component*/
+  ili9341_Init();
+
+/* LTDC Initialization -------------------------------------------------------*/
+
+  /* Polarity configuration */
+  /* Initialize the horizontal synchronization polarity as active low */
+  LtdcHandle.Init.HSPolarity = LTDC_HSPOLARITY_AL;
+  /* Initialize the vertical synchronization polarity as active low */
+  LtdcHandle.Init.VSPolarity = LTDC_VSPOLARITY_AL;
+  /* Initialize the data enable polarity as active low */
+  LtdcHandle.Init.DEPolarity = LTDC_DEPOLARITY_AL;
+  /* Initialize the pixel clock polarity as input pixel clock */
+  LtdcHandle.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
+
+  /* Timing configuration  (Typical configuration from ILI9341 datasheet)
+      HSYNC=10 (9+1)
+      HBP=20 (29-10+1)
+      ActiveW=240 (269-20-10+1)
+      HFP=10 (279-240-20-10+1)
+
+      VSYNC=2 (1+1)
+      VBP=2 (3-2+1)
+      ActiveH=320 (323-2-2+1)
+      VFP=4 (327-320-2-2+1)
+  */
+
+  /* Timing configuration */
+  /* Horizontal synchronization width = Hsync - 1 */
+  LtdcHandle.Init.HorizontalSync = 9;
+  /* Vertical synchronization height = Vsync - 1 */
+  LtdcHandle.Init.VerticalSync = 1;
+  /* Accumulated horizontal back porch = Hsync + HBP - 1 */
+  LtdcHandle.Init.AccumulatedHBP = 29;
+  /* Accumulated vertical back porch = Vsync + VBP - 1 */
+  LtdcHandle.Init.AccumulatedVBP = 3;
+  /* Accumulated active width = Hsync + HBP + Active Width - 1 */
+  LtdcHandle.Init.AccumulatedActiveH = 323;
+  /* Accumulated active height = Vsync + VBP + Active Heigh - 1 */
+  LtdcHandle.Init.AccumulatedActiveW = 269;
+  /* Total height = Vsync + VBP + Active Heigh + VFP - 1 */
+  LtdcHandle.Init.TotalHeigh = 327;
+  /* Total width = Hsync + HBP + Active Width + HFP - 1 */
+  LtdcHandle.Init.TotalWidth = 279;
+
+  /* Configure R,G,B component values for LCD background color */
+  LtdcHandle.Init.Backcolor.Blue = 0;
+  LtdcHandle.Init.Backcolor.Green = 0;
+  LtdcHandle.Init.Backcolor.Red = 0;
+
+  LtdcHandle.Instance = LTDC;
+
+  /* Configure the LTDC */
+  if(HAL_LTDC_Init(&LtdcHandle) != HAL_OK)
+  {
+    /* Initialization Error */
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief  System Clock Configuration
+  *         The system Clock is configured as follow :
+  *            System Clock source            = PLL (HSE)
+  *            SYSCLK(Hz)                     = 180000000
+  *            HCLK(Hz)                       = 180000000
+  *            AHB Prescaler                  = 1
+  *            APB1 Prescaler                 = 4
+  *            APB2 Prescaler                 = 2
+  *            HSE Frequency(Hz)              = 8000000
+  *            PLL_M                          = 8
+  *            PLL_N                          = 360
+  *            PLL_P                          = 2
+  *            PLL_Q                          = 7
+  *            VDD(V)                         = 3.3
+  *            Main regulator output voltage  = Scale1 mode
+  *            Flash Latency(WS)              = 5
+  *         The LTDC Clock is configured as follow :
+  *            PLLSAIN                        = 192
+  *            PLLSAIR                        = 4
+  *            PLLSAIDivR                     = 8
+  * @param  None
+  * @retval None
+  */
+static void SystemClock_Config(void)
+{
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+  RCC_PeriphCLKInitTypeDef  PeriphClkInitStruct;
+
+  /* Enable Power Control clock */
+  __HAL_RCC_PWR_CLK_ENABLE();
+
+  /* The voltage scaling allows optimizing the power consumption when the device is
+     clocked below the maximum system frequency, to update the voltage scaling value
+     regarding system frequency refer to product datasheet.  */
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /*##-1- System Clock Configuration #########################################*/
+  /* Enable HSE Oscillator and activate PLL with HSE as source */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 360;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
+  HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+  /* Activate the Over-Drive mode */
+  HAL_PWREx_EnableOverDrive();
+
+  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
+     clocks dividers */
+  RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+
+  /*##-2- LTDC Clock Configuration ###########################################*/
+  /* LCD clock configuration */
+  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 MHz */
+  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 MHz */
+  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/4 = 48 MHz */
+  /* LTDC clock frequency = PLLLCDCLK / RCC_PLLSAIDIVR_8 = 48/8 = 6 MHz */
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
+  PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
+  PeriphClkInitStruct.PLLSAI.PLLSAIR = 4;
+  PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_8;
+  HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+}
+
+#if 0
 /**
 * @brief  Mems gyroscope Demo application.
 * @param  None
@@ -126,19 +329,19 @@ static void Demo_MEMS(void)
     if ((int16_t)Buffer[0] > 40)
     {
       /* Clear the LCD */
-      LCD_Clear(LCD_COLOR_WHITE);
-      LCD_SetTextColor(LCD_COLOR_MAGENTA);
-      LCD_DrawFullRect(100, 40, 40, 120);
-      LCD_FillTriangle(50, 190, 120, 160, 160, 310);
+      BSP_LCD_Clear(LCD_COLOR_WHITE);
+      BSP_LCD_SetTextColor(LCD_COLOR_MAGENTA);
+      BSP_LCD_DrawRect(100, 40, 40, 120);
+      BSP_LCD_FillTriangle(50, 190, 120, 160, 160, 310);
       Delay(50);
     }
     if ((int16_t)Buffer[0] < -40)
     {
       /* Clear the LCD */
-      LCD_Clear(LCD_COLOR_WHITE);
-      LCD_SetTextColor(LCD_COLOR_RED);
-      LCD_DrawFullRect(100, 160, 40, 120);
-      LCD_FillTriangle(50, 190, 120, 160, 160, 10);
+      BSP_LCD_Clear(LCD_COLOR_WHITE);
+      BSP_LCD_SetTextColor(LCD_COLOR_RED);
+      BSP_LCD_DrawRect(100, 160, 40, 120);
+      BSP_LCD_FillTriangle(50, 190, 120, 160, 160, 10);
       Delay(50);
     }
   }
@@ -147,49 +350,22 @@ static void Demo_MEMS(void)
     if ((int16_t)Buffer[1] < -40)
     {
       /* Clear the LCD */
-      LCD_Clear(LCD_COLOR_WHITE);
-      LCD_SetTextColor(LCD_COLOR_GREEN);
-      LCD_DrawFullRect(120, 140, 100, 40);
-      LCD_FillTriangle(120, 120, 5, 60, 260, 160);
+      BSP_LCD_Clear(LCD_COLOR_WHITE);
+      BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
+      BSP_LCD_DrawRect(120, 140, 100, 40);
+      BSP_LCD_FillTriangle(120, 120, 5, 60, 260, 160);
       Delay(50);
     }
     if ((int16_t)Buffer[1] > 40)
     {
       /* Clear the LCD */
-      LCD_Clear(LCD_COLOR_WHITE);
-      LCD_SetTextColor(LCD_COLOR_BLUE);
-      LCD_DrawFullRect(20, 140, 100, 40);
-      LCD_FillTriangle(120, 120, 235, 60, 260, 160);
+      BSP_LCD_Clear(LCD_COLOR_WHITE);
+      BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
+      BSP_LCD_DrawRect(20, 140, 100, 40);
+      BSP_LCD_FillTriangle(120, 120, 235, 60, 260, 160);
       Delay(50);
     }
   }
-}
-
-/**
-* @brief  Configure the Mems to gyroscope application.
-* @param  None
-* @retval None
-*/
-static void Demo_GyroConfig(void)
-{
-  L3GD20_InitTypeDef L3GD20_InitStructure;
-  L3GD20_FilterConfigTypeDef L3GD20_FilterStructure;
-
-  /* Configure Mems L3GD20 */
-  L3GD20_InitStructure.Power_Mode = L3GD20_MODE_ACTIVE;
-  L3GD20_InitStructure.Output_DataRate = L3GD20_OUTPUT_DATARATE_1;
-  L3GD20_InitStructure.Axes_Enable = L3GD20_AXES_ENABLE;
-  L3GD20_InitStructure.Band_Width = L3GD20_BANDWIDTH_4;
-  L3GD20_InitStructure.BlockData_Update = L3GD20_BlockDataUpdate_Continous;
-  L3GD20_InitStructure.Endianness = L3GD20_BLE_LSB;
-  L3GD20_InitStructure.Full_Scale = L3GD20_FULLSCALE_500;
-  L3GD20_Init(&L3GD20_InitStructure);
-
-  L3GD20_FilterStructure.HighPassFilter_Mode_Selection =L3GD20_HPM_NORMAL_MODE_RES;
-  L3GD20_FilterStructure.HighPassFilter_CutOff_Frequency = L3GD20_HPFCF_0;
-  L3GD20_FilterConfig(&L3GD20_FilterStructure) ;
-
-  L3GD20_FilterCmd(L3GD20_HIGHPASSFILTER_ENABLE);
 }
 
 /**
@@ -274,7 +450,7 @@ static void Gyro_SimpleCalibration(float* GyroData)
   GyroData[1] = Y_BiasError;
   GyroData[2] = Z_BiasError;
 }
-
+#endif
 
 /**
 * @brief  Basic management of the timeout situation.
@@ -308,6 +484,21 @@ void TimingDelay_Decrement(void)
   if (TimingDelay != 0x00)
   {
     TimingDelay--;
+  }
+}
+
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @param  None
+  * @retval None
+  */
+static void Error_Handler(void)
+{
+  /* Turn LED3 on */
+  BSP_LED_On(LED3);
+  while(1)
+  {
   }
 }
 
