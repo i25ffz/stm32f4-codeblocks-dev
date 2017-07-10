@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="uart" />
+		<Option title="exti" />
 		<Option pch_mode="2" />
 		<Option compiler="stm-gcc" />
 		<Build>
 			<Target title="debug">
-				<Option output="uart_d" prefix_auto="1" extension_auto="1" />
+				<Option output="exti_d" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/debug/" />
 				<Option type="5" />
@@ -23,7 +23,7 @@
 				</ExtraCommands>
 			</Target>
 			<Target title="release">
-				<Option output="uart" prefix_auto="1" extension_auto="1" />
+				<Option output="exti" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/release/" />
 				<Option type="5" />
@@ -102,9 +102,6 @@
 		<Unit filename="inc/stm32f4xx_hal_conf.h" />
 		<Unit filename="inc/stm32f4xx_it.h" />
 		<Unit filename="src/main.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/stm32f4xx_hal_msp.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/stm32f4xx_it.c">

@@ -4,5 +4,6 @@
 		<Project filename="ltdc/ltdc.cbp" />
 		<Project filename="uart/uart.cbp" />
 		<Project filename="mems/mems.cbp" />
+		<Project filename="exti/exti.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
