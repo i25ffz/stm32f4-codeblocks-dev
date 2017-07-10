@@ -132,8 +132,6 @@
 		<Unit filename="../../Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.h" />
 		<Unit filename="../../startup/startup_stm32f429xx.s" />
 		<Unit filename="inc/main.h" />
-		<Unit filename="inc/st_logo1.h" />
-		<Unit filename="inc/st_logo2.h" />
 		<Unit filename="inc/stm32f4xx_hal_conf.h" />
 		<Unit filename="inc/stm32f4xx_it.h" />
 		<Unit filename="src/main.c">
