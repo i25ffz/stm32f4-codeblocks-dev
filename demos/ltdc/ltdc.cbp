@@ -57,7 +57,7 @@
 			<Add directory="../../Utilities/STM32F429I-Discovery" />
 		</Compiler>
 		<Linker>
-			<Add option="-mthumb -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T../../LinkerScript.ld" />
+			<Add option="-mthumb -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 --specs=nosys.specs -T../../LinkerScript.ld" />
 		</Linker>
 		<Unit filename="../../HAL_Driver/Src/stm32f4xx_hal.c">
 			<Option compilerVar="CC" />
@@ -131,9 +131,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/stm32f4xx_it.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/syscalls.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/system_stm32f4xx.c">
